@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>三種の神器 安全活動確認票</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@500&display=swap');
+
+  :root {
+    --c-bg: #0f1117;
+    --c-surface: #1a1d27;
+    --c-card: #21253a;
+    --c-border: #2e3350;
+    --c-accent: #f59e0b;
+    --c-accent2: #3b82f6;
+    --c-ok: #22c55e;
+    --c-ng: #ef4444;
+    --c-text: #e8eaf0;
+    --c-muted: #6b7280;
+    --c-label: #a0a8c0;
+    --r: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 2px solid var(--c-accent);
+    padding: 20px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--c-accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: .06em;
+    margin-bottom: 6px;
+  }
+  .header h1 {
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: .02em;
+    line-height: 1.3;
+  }
+  .header h1 span { color: var(--c-accent); }
+
+  /* ===== PROGRESS ===== */
+  .progress-wrap {
+    padding: 10px 16px 0;
+  }
+  .progress-bar-bg {
+    background: var(--c-border);
+    border-radius: 99px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--c-accent2), var(--c-accent));
+    border-radius: 99px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--c-muted);
+    margin-top: 4px;
+  }
+  .score-display {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--c-accent);
+  }
+
+  /* ===== SECTION ===== */
+  .section {
+    margin: 16px 12px 0;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--r);
+    overflow: hidden;
+  }
+  .section-header {
+    background: var(--c-card);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .section-num {
+    background: var(--c-accent);
+    color: #000;
+    font-weight: 900;
+    font-size: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    flex: 1;
+    line-height: 1.4;
+  }
+  .section-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--c-muted);
+    flex-shrink: 0;
+  }
+
+  /* ===== BASIC INFO ===== */
+  .basic-info {
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .basic-info .full { grid-column: 1 / -1; }
+  .field-label {
+    font-size: 11px;
+    color: var(--c-label);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  input[type=text], input[type=date], input[type=number], select, textarea {
+    width: 100%;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    color: var(--c-text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color .2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--c-accent2);
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  textarea {
+    resize: none;
+    line-height: 1.6;
+  }
+
+  /* ===== CHECK ITEM ===== */
+  .check-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-q {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .check-q .q-num {
+    display: inline-block;
+    background: var(--c-accent2);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ===== AB TOGGLE ===== */
+  .ab-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .ab-toggle label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--c-bg);
+    border: 2px solid var(--c-border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .ab-toggle input[type=radio] { display: none; }
+  .ab-toggle label.opt-a:has(input:checked) {
+    background: #052e16;
+    border-color: var(--c-ok);
+    color: var(--c-ok);
+  }
+  .ab-toggle label.opt-b:has(input:checked) {
+    background: #1f0505;
+    border-color: var(--c-ng);
+    color: var(--c-ng);
+  }
+  .ab-toggle label .pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    opacity: .7;
+  }
+
+  /* ===== REASON FIELD ===== */
+  .reason-field {
+    display: none;
+    margin-top: 8px;
+  }
+  .reason-field.show { display: block; }
+  .reason-field textarea {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  .reason-label {
+    font-size: 11px;
+    color: var(--c-ng);
+    margin-bottom: 5px;
+    font-weight: 600;
+  }
+
+  /* ===== KY SECTION ===== */
+  .ky-fields {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  /* ===== SANSHU (三工種) ===== */
+  .sanshu-check {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .sanshu-title {
+    font-size: 13px;
+    color: var(--c-label);
+    margin-bottom: 10px;
+  }
+  .sanshu-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sanshu-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    cursor: pointer;
+  }
+  .sanshu-toggle input[type=checkbox] { display: none; }
+  .sanshu-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--c-border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+    transition: all .2s;
+  }
+  .sanshu-toggle:has(input:checked) {
+    border-color: var(--c-accent);
+    background: #1c1505;
+  }
+  .sanshu-toggle:has(input:checked) .sanshu-box {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    color: #000;
+  }
+  .sanshu-toggle:has(input:checked) .sanshu-box::after { content: '○'; font-weight: 700; }
+  .sanshu-name { font-size: 14px; font-weight: 500; }
+
+  /* ===== SUBMIT ===== */
+  .submit-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, var(--c-bg) 70%, transparent);
+    padding: 16px 16px 24px;
+    z-index: 200;
+  }
+  .submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--c-accent2), #6366f1);
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity .2s, transform .1s;
+    letter-spacing: .04em;
+  }
+  .submit-btn:active { transform: scale(.98); opacity: .9; }
+  .submit-icon { font-size: 20px; }
+
+  /* ===== MODAL ===== */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.75);
+    z-index: 500;
+    align-items: flex-end;
+    padding: 0;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--c-surface);
+    border-radius: 20px 20px 0 0;
+    border-top: 2px solid var(--c-accent);
+    padding: 24px 20px 40px;
+    width: 100%;
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .modal h2 {
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .modal-score {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--c-accent);
+    margin: 16px 0 4px;
+    line-height: 1;
+  }
+  .modal-score span { font-size: 20px; color: var(--c-muted); }
+  .modal-msg {
+    text-align: center;
+    color: var(--c-label);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .modal-close {
+    width: 100%;
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
+    color: var(--c-text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px;
+    cursor: pointer;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--c-border);
+    font-size: 13px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .result-pts.ok { color: var(--c-ok); }
+  .result-pts.ng { color: var(--c-ng); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-badge">令和7年度改訂版</div>
+  <h1>「三種の神器」<span>安全活動</span>確認票</h1>
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
+    <div class="progress-label">
+      <span id="progressLabel">0 / 12 回答済み</span>
+      <span class="score-display" id="scoreLabel">0 / 100点</span>
+    </div>
+  </div>
+</div>
+
+<form id="mainForm">
+
+  <!-- 基本情報 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">基</div>
+      <div class="section-title">基本情報</div>
+    </div>
+    <div class="basic-info">
+      <div class="full">
+        <div class="field-label">実施日</div>
+        <input type="date" id="jisshi_date">
+      </div>
+      <div class="full">
+        <div class="field-label">現場略称</div>
+        <input type="text" id="genba_name" placeholder="例：○○ビル新築工事">
+      </div>
+      <div>
+        <div class="field-label">会社名</div>
+        <input type="text" id="company_name" placeholder="株式会社○○">
+      </div>
+      <div>
+        <div class="field-label">氏名</div>
+        <input type="text" id="worker_name" placeholder="山田 太郎">
+      </div>
+      <div>
+        <div class="field-label">年齢</div>
+        <input type="number" id="worker_age" placeholder="35">
+      </div>
+      <div>
+        <div class="field-label">経験年数</div>
+        <input type="number" id="exp_years" placeholder="10">
+      </div>
+      <div class="full">
+        <div class="field-label">職種</div>
+        <select id="shokushu">
+          <option value="">選択してください</option>
+          <option>職長</option>
+          <option>土工</option>
+          <option>とび工</option>
+          <option>鍛冶工</option>
+          <option>大工</option>
+          <option>鉄筋工</option>
+          <option>重機OP</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="full">
+        <div class="field-label">当日の作業内容</div>
+        <textarea id="today_work" rows="2" placeholder="例：2階スラブ型枠組立作業"></textarea>
+      </div>
+      <div class="full">
+        <div class="field-label">確認者</div>
+        <input type="text" id="confirmer" placeholder="確認者所属会社・氏名">
+      </div>
+    </div>
+  </div>
+
+  <!-- セクション1：安全リーフレット -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">最新の安全リーフレットを持っていますか？</div>
+      <div class="section-pts">5点</div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❶</span>最新の安全リーフレットの所持</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q1','A',5)">
+          <input type="radio" name="q1" value="A">A. 持っている<span class="pts">+5点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q1','B',0)">
+          <input type="radio" name="q1" value="B">B. 持っていない<span class="pts">0点</span>
+        </label>
+      </div>
+      <div class="reason-field" id="reason_q1">
+        <div class="reason-label">▶ 持っていない理由を入力</div>
+        <textarea rows="2" placeholder="理由を入力してください"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- セクション2：三種の神器 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">三種の神器安全活動を理解していますか？</div>
+      <div class="section-pts">10点</div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❷</span>三種の神器安全活動の理解</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q2','A',10)">
+          <input type="radio" name="q2" value="A">A. 理解している<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q2','B',0)">
+          <input type="radio" name="q2" value="B">していない<span class="pts">0点</span>
+        </label>
+      </div>
+      <div class="reason-field" id="reason_q2">
+        <div class="reason-label">▶ 理解していない理由を入力</div>
+        <textarea rows="2" placeholder="理由を入力してください"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- セクション3：ヒヤリ・ハット -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">ヒヤリ・ハット活動</div>
+      <div class="section-pts">30点</div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❸</span>ケガをしそうになった場合、すぐに大崎社員または職長に報告しますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q3','A',10)">
+          <input type="radio" name="q3" value="A">A. とる<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q3','B',0)">
+          <input type="radio" name="q3" value="B">B. とらない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❹</span>自分の心にとどめ、自分なりに対策をとりますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q4','A',10)">
+          <input type="radio" name="q4" value="A">A. する<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q4','B',0)">
+          <input type="radio" name="q4" value="B">B. しない<span class="pts">0点</span>
+        </label>
+      </div>
+      <div class="reason-field" id="reason_q34">
+        <div class="reason-label">▶ ❸・❹でBの場合、理由を入力</div>
+        <textarea rows="2" placeholder="理由を入力してください"></textarea>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❺</span>「ヒヤリポアプリ」またはチェックシートでの報告方法を知っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q5','A',5)">
+          <input type="radio" name="q5" value="A">A. 知っている<span class="pts">+5点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q5','B',0)">
+          <input type="radio" name="q5" value="B">B. 知らない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❻</span>今までのヒヤリ・ハット体験を報告したことがありますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q6','A',5)">
+          <input type="radio" name="q6" value="A">A. ある<span class="pts">+5点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q6','B',0)">
+          <input type="radio" name="q6" value="B">B. ない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❼</span>今後も報告を行っていきますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q7','A',10)">
+          <input type="radio" name="q7" value="A">A. 行っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q7','B',0)">
+          <input type="radio" name="q7" value="B">B. 行っていない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- セクション4：１人KY -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">当日の「１人KY」の実施</div>
+      <div class="section-pts">30点</div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❽</span>大崎建設の災害事例・再発防止対策、または「４つのないか＋１運動」を参考にすることを知っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q8','A',10)">
+          <input type="radio" name="q8" value="A">A. 知っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q8','B',0)">
+          <input type="radio" name="q8" value="B">B. 知らない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="ky-fields">
+      <div>
+        <div class="field-label">最も危ないと思われる作業内容</div>
+        <textarea rows="2" id="ky_kiken" placeholder="例：足場上での資材運搬時の転落"></textarea>
+      </div>
+      <div>
+        <div class="field-label">危険のポイント（どこにどんな危険があるか）</div>
+        <textarea rows="2" id="ky_point" placeholder="例：足場端部でバランスを崩しやすい"></textarea>
+      </div>
+      <div>
+        <div class="field-label">自分で決めた行動目標</div>
+        <textarea rows="2" id="ky_target" placeholder="例：必ず命綱を使用し端部には近づかない"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- セクション5：指差呼称 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">当日の「指差呼称」活動</div>
+      <div class="section-pts">40点</div>
+    </div>
+
+    <!-- 三工種チェック -->
+    <div class="sanshu-check">
+      <div class="sanshu-title">今日の作業で「三工種作業」はありますか？（該当するものに○）</div>
+      <div class="sanshu-items">
+        <label class="sanshu-toggle">
+          <input type="checkbox" id="sanshu1">
+          <div class="sanshu-box"></div>
+          <span class="sanshu-name">高所・開口部・法肩付近作業</span>
+        </label>
+        <label class="sanshu-toggle">
+          <input type="checkbox" id="sanshu2">
+          <div class="sanshu-box"></div>
+          <span class="sanshu-name">玉掛作業</span>
+        </label>
+        <label class="sanshu-toggle">
+          <input type="checkbox" id="sanshu3">
+          <div class="sanshu-box"></div>
+          <span class="sanshu-name">車両系建設機械使用（近接）作業</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❾</span>高所・開口部・法肩付近作業で指差呼称を行っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q9','A',10)">
+          <input type="radio" name="q9" value="A">A. 行っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q9','B',0)">
+          <input type="radio" name="q9" value="B">B. 行っていない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">❿</span>玉掛作業は「３・３・３運動」で行っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q10','A',10)">
+          <input type="radio" name="q10" value="A">A. 行っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q10','B',0)">
+          <input type="radio" name="q10" value="B">B. 行っていない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">⓫</span>車両系建設機械使用（近接）作業で「パーグー合図」を行っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q11','A',10)">
+          <input type="radio" name="q11" value="A">A. 行っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q11','B',0)">
+          <input type="radio" name="q11" value="B">B. 行っていない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-q"><span class="q-num">⓬</span>指差呼称活動は仲間同士で「アテスト運動」により行っていますか？</div>
+      <div class="ab-toggle">
+        <label class="opt-a" onclick="handleAB(this,'q12','A',10)">
+          <input type="radio" name="q12" value="A">A. 行っている<span class="pts">+10点</span>
+        </label>
+        <label class="opt-b" onclick="handleAB(this,'q12','B',0)">
+          <input type="radio" name="q12" value="B">B. 行っていない<span class="pts">0点</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+</form>
+
+<!-- SUBMIT BUTTON -->
+<div class="submit-area">
+  <button type="button" class="submit-btn" onclick="openModal()">
+    <span class="submit-icon">📋</span> 集計して確認する
+  </button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeModalBg(event)">
+  <div class="modal">
+    <h2>📊 評価結果</h2>
+    <div class="modal-score" id="modalScore">0 <span>/ 100点</span></div>
+    <div class="modal-msg" id="modalMsg"></div>
+    <div id="modalDetail" style="margin-bottom:20px;"></div>
+    <button class="modal-close" onclick="closeModal()">閉じる</button>
+  </div>
+</div>
+
+<script>
+  // 配点定義
+  const QUESTIONS = [
+    { name:'q1',  pts:5,  label:'❶ 安全リーフレット所持' },
+    { name:'q2',  pts:10, label:'❷ 三種の神器理解' },
+    { name:'q3',  pts:10, label:'❸ 報告行動（報告する）' },
+    { name:'q4',  pts:10, label:'❹ 自分なりの対策' },
+    { name:'q5',  pts:5,  label:'❺ ヒヤリポ報告方法把握' },
+    { name:'q6',  pts:5,  label:'❻ ヒヤリハット報告経験' },
+    { name:'q7',  pts:10, label:'❼ 今後も報告継続' },
+    { name:'q8',  pts:10, label:'❽ 1人KY参考知識' },
+    { name:'q9',  pts:10, label:'❾ 高所等 指差呼称' },
+    { name:'q10', pts:10, label:'❿ 玉掛３・３・３運動' },
+    { name:'q11', pts:10, label:'⓫ パーグー合図' },
+    { name:'q12', pts:10, label:'⓬ アテスト運動' },
+  ];
+
+  const answers = {};
+
+  function handleAB(label, qname, val, pts) {
+    answers[qname] = { val, pts: val === 'A' ? pts : 0 };
+
+    // B選択時に理由欄表示
+    const reasonMap = { q1:'reason_q1', q2:'reason_q2', q3:'reason_q34', q4:'reason_q34' };
+    if (reasonMap[qname]) {
+      const el = document.getElementById(reasonMap[qname]);
+      // q3 or q4 のどちらかがBなら表示
+      if (qname === 'q3' || qname === 'q4') {
+        const q3val = answers['q3'] ? answers['q3'].val : null;
+        const q4val = answers['q4'] ? answers['q4'].val : null;
+        el.classList.toggle('show', q3val === 'B' || q4val === 'B');
+      } else {
+        el.classList.toggle('show', val === 'B');
+      }
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const answered = Object.keys(answers).length;
+    const total = QUESTIONS.length;
+    const score = Object.values(answers).reduce((s, a) => s + a.pts, 0);
+    const maxScore = QUESTIONS.reduce((s, q) => s + q.pts, 0);
+
+    document.getElementById('progressBar').style.width = (answered / total * 100) + '%';
+    document.getElementById('progressLabel').textContent = `${answered} / ${total} 回答済み`;
+    document.getElementById('scoreLabel').textContent = `${score} / ${maxScore}点`;
+  }
+
+  function openModal() {
+    const score = Object.values(answers).reduce((s, a) => s + a.pts, 0);
+    document.getElementById('modalScore').innerHTML = `${score} <span>/ 100点</span>`;
+
+    let msg = '';
+    if (score >= 90) msg = '🌟 優秀！安全意識が非常に高いです';
+    else if (score >= 70) msg = '✅ 良好。引き続き意識を高めましょう';
+    else if (score >= 50) msg = '⚠️ もう少し改善が必要です';
+    else msg = '🔴 安全活動の見直しが必要です';
+    document.getElementById('modalMsg').textContent = msg;
+
+    let detail = '';
+    QUESTIONS.forEach(q => {
+      const a = answers[q.name];
+      const got = a ? a.pts : 0;
+      const ok = got === q.pts;
+      detail += `<div class="result-row">
+        <span>${q.label}</span>
+        <span class="result-pts ${ok ? 'ok' : 'ng'}">${got}/${q.pts}点</span>
+      </div>`;
+    });
+    document.getElementById('modalDetail').innerHTML = detail;
+
+    document.getElementById('modalBg').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('modalBg').classList.remove('open');
+  }
+  function closeModalBg(e) {
+    if (e.target === document.getElementById('modalBg')) closeModal();
+  }
+
+  // 今日の日付をデフォルトセット
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  document.getElementById('jisshi_date').value = `${yyyy}-${mm}-${dd}`;
+
+  updateProgress();
+</script>
+</body>
+</html>
